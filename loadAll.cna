@@ -1,0 +1,52 @@
+# This is just one method to approach this situation
+# We can define a default "root" for everything to branch off of.
+
+sub GetCurrentFilesCNAsInPrimaryDirectory {
+    local('$currentUnknownItem');
+
+    # Supply the path as the first positional argument
+    foreach $currentUnknownItem (ls($1)) {
+        if ( (!-isDir $currentUnknownItem) && ($currentUnknownItem !ismatch $2) ) {
+            print('Including ' . $currentUnknownItem . ":\t");
+            include($currentUnknownItem);
+            println('Done!');
+        }
+    }
+}
+
+sub GetFoldersFromPrimaryDirectory {
+    local('$currentUnknownItem');
+
+    # Repeat as before
+    foreach $currentUnknownItem (ls($1)) {
+        if ( (-isDir $currentUnknownItem) ) {
+            println("Discovered a new directory, let's see what's inside to include!");
+            GetCurrentFilesCNAsInPrimaryDirectory($currentUnknownItem);
+        }
+    }
+}
+
+local('$currentScriptRoot $currentScriptFile');
+
+# By declaring a script_resource with a blank string, this is effectively the CWD of WHEREVER the script is
+# being run from.  NO MORE HARD CODING!
+$currentScriptRoot = script_resource("") . '/';
+
+# Our current file, let's not circularly reinclude it. ^_^
+$currentScriptFile = $currentScriptRoot . 'loadAll.cna';    
+
+# Call our subroutine, now that we have a root to start from
+GetCurrentFilesCNAsInPrimaryDirectory($currentScriptRoot, $currentScriptFile);
+
+# Now we've included the subroutine from secondaryCNA.cna, which means
+# we can call the GenerateSomePrintStatement with an argument, handled at position 1.
+GenerateSomePrintStatment("WHOA");
+
+# Let's try to get our functions from subfolders too, why not?
+GetFoldersFromPrimaryDirectory($currentScriptRoot);
+
+# Let's try calling something else?
+println("One + One = " . AddOnePlusOne());
+
+# Does our other function work too?
+DisplayTheDate();

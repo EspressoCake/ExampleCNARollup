@@ -1,0 +1,4 @@
+# Just an example function after "including"
+sub GenerateSomePrintStatment {
+    println($1);
+}

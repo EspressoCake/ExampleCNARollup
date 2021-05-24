@@ -1,0 +1,3 @@
+sub DisplayTheDate {
+    println("The date is: " . dstamp(ticks()));
+}
